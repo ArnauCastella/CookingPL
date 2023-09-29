@@ -1,0 +1,180 @@
+//BNF LL1 GRAMMAR FILE
+//
+//Order maters:
+//      - the first rules will take priority over the lasts (e.g. a regex matching ".*" @ line 1 will cancel all other rules)
+//      - any non terminal's sub symbol (either if it's a terminal or not) must be defined before itself
+//      - the symbol <id> is reserved for ids
+
+//Literals
+<float> ::= r"[0-9]*\.[0-9]+"
+<integer> ::= r"[0-9]+"
+<string> ::= r"\".*?\""
+
+// Function auxiliar regex for number and dot "3. function..."
+<num_dot> ::= r"\d+\."
+<coma> ::= ","
+
+//Operators
+<open_parenthesis> ::= "("
+<close_parenthesis> ::= ")"
+<add> ::= "add"
+<strain> ::= "strain"
+<mix> ::= "mix"
+<chop> ::= "chop"
+<mod> ::= "mod"
+<assignment> ::= "of"
+<dash> ::= "-"
+<true> ::= "hot"
+<false> ::= "cold"
+<equals_token> ::= "equals"
+
+//Conditional tokens
+<logic_operator> ::= "or" | "and"
+<more_or_less> ::= "more" | "less" | "morequal" | "lessequal"
+<exactly_token> ::= "exactly"
+<than_token> ::= "than"
+<if_token> ::= "if"
+<you_token> ::= "you"
+<have_token> ::= "have"
+<then_token> ::= "then"
+<otherwise_token> ::= "otherwise"
+<endif_token> ::= "endif"
+
+// For loop tokens
+<bake_token> ::= "bake"
+<for_token> ::= "for"
+<precision_tokens> ::= "entirely" | "approximately"
+<minutes_token> ::= "minutes"
+<starting_token> ::= "starting"
+<at_token> ::= "at"
+<stop_oven_token> ::= "stopoven"
+
+//Function tokens
+<set_token> ::= "set"
+<aside_token> ::= "aside"
+<prepares_token> ::= "prepares"
+<with_token> ::= "with"
+<using_token> ::= "using"
+<turn_page_token> ::= "turnpage"
+<see_token> ::= "see"
+
+// Calling a function tokens
+<put_token> ::= "put"
+<in_token> ::= "in"
+<after_token> ::= "after"
+
+// Post-it Tokens
+<concatenate> ::= "\+"
+
+//Separators
+<double_dot> ::= ":"
+<dot> ::= "."
+<scope> ::= r"\t|    "
+<ingredient> ::= "ingredients"
+<serving> ::= "serving"
+<steps> ::= "steps"
+
+//Keywords
+<post-it> ::= "post-it"
+<datatype> ::= "ml" | "g" | "temp"
+
+//Identifier
+<id> ::= r"[A-Za-z_-]+"
+
+// Extra tokens
+<plus_token> ::= "+"
+<or_equal_token> ::= "orequal"
+<approximately_token> ::= "approximately"
+<entirely_token> ::= "entirely"
+
+//Production rules
+
+<starting_statement> ::= <ingredient_statement><variable_declaration_global><step_statement><function_declaration><serving_statement><inner_block_statement>
+
+<serving_statement> ::= <serving><double_dot>
+<ingredient_statement> ::= <ingredient><double_dot>
+<step_statement> ::= <steps><double_dot>
+
+<inner_block_statement> ::= <inner_block_statement#>|e
+<inner_block_statement#> ::= <variable_declaration_local><inner_block_statement>|<plus_token><variable_assignation><inner_block_statement>|<conditional><inner_block_statement>|<for_loop><inner_block_statement><stop_oven_token><inner_block_statement>|<display_on_screen><inner_block_statement>|<variable_assignation_function><inner_block_statement>|<see_function><inner_block_statement>
+
+//
+
+<operand> ::= <numbers>|<id>
+<numbers> ::= <integer>|<float>
+<variable_values> ::= <numbers>|<true>|<false>
+<variable_declaration_global> ::= <dash><variable_values><datatype><assignment><id><variable_declaration_aux>|e
+<variable_declaration_local> ::= <dash><variable_values><datatype><assignment><id>
+<variable_declaration_aux> ::= <dash><variable_values><datatype><assignment><id><variable_declaration_aux>|e
+<variable_assignation> ::= <id><equals_token><variable_assignation_type>
+<variable_assignation_type> ::= <true>|<false>|<arithmetic_operation>
+
+<see_function> ::= <see_token><function_call>
+
+<variable_assignation_function> ::= <put_token><in_token><id><after_token><using_token><function_call>
+<function_call> ::= <id><arguments_function_call>
+<arguments_function_call> ::= <with_token><id><arguments_function_call#>|e
+<arguments_function_call#> ::= <coma><arguments_function_call>|e
+
+<function_declaration> ::= <function_declaration#>|e
+<function_declaration#> ::= <num_dot><id><type_of_function><function_declaration>
+<type_of_function> ::= <return_function>|<no_return_function>
+
+//Functions
+<return_function> ::= <prepares_token><datatype><arguments><inner_block_statement><set_token><aside_token><with_token><operand><turn_page_token>
+<no_return_function> ::= <arguments><inner_block_statement><set_token><aside_token><turn_page_token>
+<arguments> ::= <using_token><parameters>|e
+<parameters> ::= <datatype><assignment><id><parameters#>
+<parameters#> ::= <coma><parameters>|e
+
+//A rule like the one bellow wouldn't work as the first of variable_declaration & the first of E are the same, therefore we will never go to E
+//<inner_block_statement#> ::= <variable_declaration><inner_block_statement>|<E><inner_block_statement>
+
+//Arithmetic operations
+//<arithmetic_operation> ::= <addition>
+//<addition> ::= <subtraction><shadow_rule_1>
+//<shadow_rule_1> ::= <add><subtraction><shadow_rule_1>|e
+//<subtraction> ::= <multiplication><shadow_rule_2>
+//<shadow_rule_2> ::= <strain><multiplication><shadow_rule_2>|e
+//<multiplication> ::= <division><shadow_rule_3>
+//<shadow_rule_3> ::= <mix><division><shadow_rule_3>|e
+//<division> ::= <modulo><shadow_rule_4>
+//<shadow_rule_4> ::= <chop><modulo><shadow_rule_4>|e
+//<modulo> ::= <shadow_rule_6><shadow_rule_5>
+//<shadow_rule_5> ::= <mod><shadow_rule_6><shadow_rule_5>|e
+//<shadow_rule_6> ::= <operand>|<open_parenthesis><addition><close_parenthesis>
+
+<arithmetic_operation> ::= <addition>
+<addition> ::= <subtraction><shadow_rule_1>
+<shadow_rule_1> ::= <add><subtraction>|e
+<subtraction> ::= <multiplication><shadow_rule_2>
+<shadow_rule_2> ::= <strain><multiplication>|e
+<multiplication> ::= <division><shadow_rule_3>
+<shadow_rule_3> ::= <mix><division>|e
+<division> ::= <modulo><shadow_rule_4>
+<shadow_rule_4> ::= <chop><modulo>|e
+<modulo> ::= <shadow_rule_6><shadow_rule_5>
+<shadow_rule_5> ::= <mod><shadow_rule_6>|e
+<shadow_rule_6> ::= <operand>
+
+//Conditional
+
+<conditional> ::= <if_clause> <inner_block_statement> <conditional#>
+<conditional#> ::= <else_clause> <endif_token> | <endif_token>
+// <if_clause> ::= <if_token> <you_token> <have_token> <condition> <then_token>
+// <condition> ::= <comparing_operators> <condition_declaration> <condition_aux>
+<if_clause> ::= <if_token> <you_token> <have_token> <condition> <condition_aux> <then_token>
+<condition> ::= <comparing_operators> <condition_declaration>
+<comparing_operators> ::= <exactly_token> | <more_or_less> <than_token>
+<condition_declaration> ::= <variable_values> <datatype> <assignment> <id>
+<condition_aux> ::= <logic_operator> <you_token> <have_token> <condition> | e
+<else_clause> ::= <otherwise_token> <inner_block_statement>
+
+// For loop
+<for_loop> ::= <bake_token> <for_token> <precision_tokens> <operand> <minutes_token> <id> <starting_token> <at_token> <integer>
+
+//<post_it_content> ::=
+// Post-it (print)
+<display_on_screen> ::= <post-it> <post_it_content>
+<post_it_content> ::= <string> <post_it_content_aux> | <id> <post_it_content_aux>
+<post_it_content_aux> ::= <concatenate> <post_it_content> | e

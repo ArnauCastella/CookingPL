@@ -1,0 +1,32 @@
+# This is a comment
+Ingredients:
+	- 0 g of fibonacci
+
+Steps:
+    1. fibonnacTea prepares g using g of n
+        - 0 g of varA
+        - 1 g of varB
+        - 0 g of varC
+        - 0 g of count
+
+        if you have more than 0 g of n then
+            bake for entirely n minutes count starting at 2
+                + varC equals varA add varB
+                + varA equals varB
+                + varB equals varC
+                + count equals count add 1
+            stopoven
+        otherwise
+            + varB equals 0
+        endif
+
+        set aside with varB turnpage
+
+Serving:
+    - 5 g of n
+    - 0 g of i
+
+    bake for approximately n minutes i starting at 0
+        put in fibonacci after using fibonnacTea with i
+        + i equals i add 1
+    stopoven
